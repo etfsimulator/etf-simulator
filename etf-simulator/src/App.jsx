@@ -73,6 +73,15 @@ const FUTURE_PRODUCTS = [
 
 const fmt = (v, d = 2) => new Intl.NumberFormat("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
 const fmtUSD = (v) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v);
+// Smart price formatter: handles everything from BTC ($87,000) to PEPE ($0.000008)
+const fmtPrice = (v) => {
+  if (v == null || !isFinite(v)) return "$0";
+  const abs = Math.abs(v);
+  if (abs >= 1) return fmtUSD(v);
+  if (abs >= 0.01) return "$" + v.toFixed(4);
+  if (abs >= 0.0001) return "$" + v.toFixed(6);
+  return "$" + v.toFixed(8);
+};
 const shareToX = (text) => {
   const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
   window.open(url, "_blank", "noopener,noreferrer,width=550,height=420");
@@ -551,7 +560,10 @@ You are NOT a generic robo-advisor. You are an elite fund manager with a Bloombe
 SECURITY SELECTION — USE ONLY REAL, CURRENTLY TRADEABLE TICKERS:
 - Stocks: ANY US-listed equity from NYSE, NASDAQ, AMEX. Mega-caps to micro-caps. Prioritize companies with direct thesis alignment over generic large-caps.
 - ETFs: ANY US-listed ETF — broad, sector, thematic, leveraged, inverse, international, fixed income, commodity. There are 3,000+ ETFs — use the specific one, not just SPY/QQQ.
-- Crypto: Top 100 by market cap — BTC, ETH, SOL, XRP, ADA, AVAX, LINK, DOT, MATIC, DOGE, UNI, AAVE, RNDR, FET, INJ, NEAR, SUI, APT, SEI, TIA, etc.
+- Crypto: All major coins by market cap — BTC, ETH, SOL, XRP, ADA, AVAX, LINK, DOT, MATIC, DOGE, UNI, AAVE, RNDR, FET, INJ, NEAR, SUI, APT, SEI, TIA, TON, TRX, etc.
+- Memecoins: DOGE, SHIB, PEPE, WIF, FLOKI, BONK, MEME, BRETT, POPCAT, MEW, TURBO, BOME, SLERF, MOG, PONKE, etc.
+- DeFi: AAVE, MKR, UNI, CRV, PENDLE, GMX, DYDX, JUP, LDO, RPL, etc.
+- AI tokens: FET, RNDR, TAO, OCEAN, GRT, AGIX, AR, WLD, AKT, etc.
 - Commodities: GLD, SLV, IAU, USO, UNG, DBC, PDBC, GSG, WEAT, CORN, CPER, GDX, GDXJ, SIL, URA, LIT, COPX, PPLT, PALL, WOOD, REMX, etc.
 
 RISK MANAGEMENT:
@@ -1067,8 +1079,22 @@ const getMarketStatus = (assetType) => {
 
 // Auto-detect asset type from ticker symbol
 const TICKER_TYPES = {
-  // Major cryptos
+  // Major cryptos — Top 50 by market cap
   BTC: "crypto", ETH: "crypto", SOL: "crypto", ADA: "crypto", DOT: "crypto", AVAX: "crypto", MATIC: "crypto", LINK: "crypto", UNI: "crypto", DOGE: "crypto", SHIB: "crypto", XRP: "crypto", BNB: "crypto", LTC: "crypto", ATOM: "crypto", NEAR: "crypto", APT: "crypto", ARB: "crypto", OP: "crypto", FIL: "crypto", ICP: "crypto", HBAR: "crypto", XLM: "crypto", ALGO: "crypto",
+  // L1/L2 chains
+  SUI: "crypto", SEI: "crypto", TIA: "crypto", INJ: "crypto", FET: "crypto", RNDR: "crypto", TAO: "crypto", KAS: "crypto", TRX: "crypto", TON: "crypto", STX: "crypto", EGLD: "crypto", FLOW: "crypto", MINA: "crypto", ROSE: "crypto", ZIL: "crypto", ONE: "crypto", KAVA: "crypto", CELO: "crypto", OSMO: "crypto", ASTR: "crypto", CKB: "crypto", CFX: "crypto", EOS: "crypto", NEO: "crypto", QTUM: "crypto", ZEC: "crypto", XMR: "crypto", BCH: "crypto", ETC: "crypto", BSV: "crypto",
+  // DeFi tokens
+  AAVE: "crypto", MKR: "crypto", SNX: "crypto", CRV: "crypto", COMP: "crypto", SUSHI: "crypto", YFI: "crypto", LDO: "crypto", RPL: "crypto", PENDLE: "crypto", GMX: "crypto", DYDX: "crypto", JUP: "crypto", RAY: "crypto", ORCA: "crypto", "1INCH": "crypto", BAL: "crypto", UMA: "crypto", LQTY: "crypto",
+  // Memecoins
+  PEPE: "crypto", WIF: "crypto", FLOKI: "crypto", BONK: "crypto", MEME: "crypto", DEGEN: "crypto", BRETT: "crypto", NEIRO: "crypto", MOG: "crypto", TURBO: "crypto", BABYDOGE: "crypto", ELON: "crypto", SATS: "crypto", ORDI: "crypto", RATS: "crypto", COQ: "crypto", MYRO: "crypto", SAMO: "crypto", BOME: "crypto", SLERF: "crypto", POPCAT: "crypto", MEW: "crypto", GIGA: "crypto", SPX: "crypto", PONKE: "crypto", TOSHI: "crypto", LADYS: "crypto", WOJAK: "crypto", ANDY: "crypto",
+  // AI & data tokens
+  OCEAN: "crypto", GRT: "crypto", AGIX: "crypto", AR: "crypto", THETA: "crypto", HNT: "crypto", AKT: "crypto", IOTX: "crypto", WLD: "crypto", JASMY: "crypto", ALEPH: "crypto",
+  // Gaming & metaverse
+  AXS: "crypto", SAND: "crypto", MANA: "crypto", GALA: "crypto", IMX: "crypto", ENJ: "crypto", ILV: "crypto", PRIME: "crypto", YGG: "crypto", PIXEL: "crypto", PORTAL: "crypto", RONIN: "crypto", BEAM: "crypto",
+  // Infrastructure & interoperability
+  QNT: "crypto", RUNE: "crypto", VET: "crypto", IOTA: "crypto", ENS: "crypto", SSV: "crypto", ACH: "crypto", API3: "crypto", BAND: "crypto", COTI: "crypto",
+  // Stablecoins (for reference)
+  USDT: "crypto", USDC: "crypto", DAI: "crypto", FRAX: "crypto", TUSD: "crypto",
   // Major ETFs
   SPY: "etf", QQQ: "etf", IWM: "etf", DIA: "etf", VTI: "etf", VOO: "etf", VEA: "etf", VWO: "etf", EFA: "etf", EEM: "etf", AGG: "etf", BND: "etf", TLT: "etf", LQD: "etf", HYG: "etf", GLD: "etf", SLV: "etf", IAU: "etf", USO: "etf", UNG: "etf", DBC: "etf", PDBC: "etf", XLF: "etf", XLK: "etf", XLE: "etf", XLV: "etf", XLI: "etf", XLP: "etf", XLY: "etf", XLU: "etf", XLB: "etf", XLRE: "etf", XLC: "etf", ARKK: "etf", ARKG: "etf", ARKW: "etf", ARKF: "etf", ARKQ: "etf", SOXX: "etf", SMH: "etf", KWEB: "etf", URA: "etf", ICLN: "etf", TAN: "etf", BITO: "etf", IBIT: "etf", GBTC: "etf", ETHE: "etf", SCHD: "etf", VIG: "etf", DVY: "etf", HDV: "etf", VYM: "etf", JEPI: "etf", JEPQ: "etf", SOXL: "etf", TQQQ: "etf", SQQQ: "etf", SPXL: "etf", UVXY: "etf", VXX: "etf",
   // Commodities (futures-based or physical)
@@ -1081,6 +1107,7 @@ const detectTickerType = (sym) => {
   if (/^(X[A-Z]{1,2}|V[A-Z]{1,2}|I[A-Z]{1,3}|ARK[A-Z]|SPD[A-Z])$/.test(s)) return "etf";
   return "stock"; // default
 };
+const detectAssetType = detectTickerType; // Alias for use in price engine
 
 function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
   const [thesis, setThesis] = useState(""); const [loading, setLoading] = useState(false); const [portfolio, setPortfolio] = useState(null); const [err, setErr] = useState(""); const [openIdx, setOpenIdx] = useState(null); const [saved, setSaved] = useState(false); const [showSaveModal, setShowSaveModal] = useState(false); const [pendingSave, setPendingSave] = useState(false); const [saving, setSaving] = useState(false); const [saveErr, setSaveErr] = useState("");
@@ -1172,35 +1199,50 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
     setLiveAllocations(init);
   }, [portfolio?.id, portfolio?.holdings?.length]);
 
-  // Simulate price movement every 30 seconds (with 10-minute grace period on launch)
-  // MARKET-AWARE: Stocks/ETFs only move Mon-Fri 9:30-4 ET. Crypto moves 24/7.
+  // ══════ REAL-TIME PRICE ENGINE ══════
+  // Fetches actual market prices from Finnhub every 30 seconds.
+  // Portfolio value = Σ(shares × currentPrice) for each holding.
+  // This is how real brokerages work: you own shares, price moves, value changes.
+  const livePricesRef = useRef({}); // { symbol: { price, prevClose } } — avoids React state mutation
   useEffect(() => {
     if (!portfolio) return;
-    const createdTs = portfolio.createdTs || Date.now();
-    const timer = setInterval(() => {
-      // Grace period: no price drift for first 10 minutes after launch — NAV stays at $1M
-      if (Date.now() - createdTs < 600000) return;
+    let cancelled = false;
+    const fetchAndUpdate = async () => {
+      const quotes = await fetchRealQuotes(portfolio.holdings);
+      if (cancelled) return;
+      // Store live prices in ref for display access (no re-render needed, liveAllocations handles that)
+      Object.entries(quotes).forEach(([sym, q]) => { livePricesRef.current[sym] = q; });
       setLiveAllocations(prev => {
         const next = { ...prev };
         portfolio.holdings.forEach((h, i) => {
           if (excludedIdx.has(i)) return;
-          // Check if this asset's market is currently open
-          if (!isMarketOpen(h.type)) return; // Market closed — price frozen
-          const current = next[i] || h.allocation;
-          // Conservative volatility: ~0.01-0.03% per tick — realistic intraday movement
-          const vol = h.type === "crypto" ? 0.00025 : h.type === "commodity" ? 0.00012 : h.type === "etf" ? 0.00008 : 0.0001;
-          const isShort = h.action === "SHORT";
-          const drift = (Math.random() - 0.50) * vol; // perfectly balanced
-          const change = isShort ? -drift : drift;
-          next[i] = Math.max(current * (1 + change), current * 0.5);
+          const q = quotes[h.symbol];
+          if (q && h.shares && h.shares > 0) {
+            // REAL BROKERAGE MATH: value = shares × current market price
+            const costBasis = h.entryPrice ? h.entryPrice * h.shares : h.allocation;
+            const isShort = h.action === "SHORT";
+            if (isShort) {
+              next[i] = costBasis + (h.entryPrice - q.price) * h.shares;
+            } else {
+              next[i] = h.shares * q.price;
+            }
+          } else if (!q && !isMarketOpen(h.type)) {
+            // Market closed and no quote — keep last value, no random drift
+            next[i] = prev[i] || h.allocation;
+          }
+          // If no quote and market is open, keep last known value (prev[i])
+          // Never use random drift — only real prices or frozen values
         });
         return next;
       });
-    }, 30000); // every 30 seconds
-    return () => clearInterval(timer);
+    };
+    // Fetch immediately on mount, then every 30 seconds
+    fetchAndUpdate();
+    const timer = setInterval(fetchAndUpdate, 30000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [portfolio?.id, excludedIdx.size]);
 
-  // Compute live NAV
+  // Compute live NAV — sum of all holdings (shares × currentPrice) + cash
   const currentNAV = useMemo(() => {
     if (!portfolio) return SEED_CAPITAL;
     const holdingsValue = portfolio.holdings.reduce((s, h, i) => {
@@ -1361,33 +1403,45 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
           p.holdings = p.holdings.map(h => ({ ...h, weight: Math.round(h.allocation / SEED_CAPITAL * 1000) / 10 }));
         }
       }
-      p.holdings = p.holdings.map(h => ({ ...h, targetWeight: h.weight, currentWeight: h.weight, action: h.action || "BUY", conviction: h.conviction || "medium" }));
+      // ══════ FETCH REAL MARKET PRICES AT CREATION ══════
+      // This is the core brokerage logic: buy at real prices, compute real shares
+      const realQuotes = await fetchRealQuotes(p.holdings);
+      console.log("[Builder] Real quotes fetched:", Object.keys(realQuotes).length, "of", p.holdings.length, "holdings");
+      
+      p.holdings = p.holdings.map(h => {
+        const q = realQuotes[h.symbol];
+        const entryPrice = q ? q.price : (h.financialMetrics?.pricePerShare || null);
+        const shares = entryPrice ? h.allocation / entryPrice : null;
+        return {
+          ...h,
+          targetWeight: h.weight, currentWeight: h.weight,
+          action: h.action || "BUY", conviction: h.conviction || "medium",
+          // BROKERAGE FIELDS — these persist and drive all P&L calculations
+          entryPrice: entryPrice ? Math.round(entryPrice * 10000) / 10000 : null,
+          shares: shares ? Math.round(shares * 100000000) / 100000000 : null, // 8 decimal precision for crypto
+          entryDate: new Date().toISOString(),
+          livePrice: entryPrice, // Initially = entry price, updated by live engine
+          liveValue: h.allocation, // Initially = allocation, updated by live engine
+        };
+      });
+      
       setCashBalance(initCash);
       setNavHistory([{ ts: Date.now(), nav: 1000000, cash: initCash }]);
       const execTime = Date.now();
       const settlementDate = new Date(execTime + 2 * 86400000).toISOString().slice(0, 10); // T+2 settlement
-      const initTxs = p.holdings.map((h, i) => {
-        const pricePerShare = h.financialMetrics?.pricePerShare || (h.type === "crypto" ? Math.round(Math.random() * 50000 + 100) : Math.round(Math.random() * 400 + 10));
-        const shares = h.allocation / pricePerShare;
-        return {
-          type: h.action === "SHORT" ? "SHORT" : "BUY",
-          symbol: h.symbol,
-          name: h.name,
-          amount: h.allocation,
-          ts: execTime,
-          orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${String(i + 1).padStart(3, "0")}`,
-          executionTime: new Date(execTime).toISOString(),
-          pricePerShare: Math.round(pricePerShare * 100) / 100,
-          shares: Math.round(shares * 10000) / 10000,
-          commission: 0,
-          settlementDate,
-          orderType: "MARKET",
-          status: "FILLED",
-          weight: h.weight,
-          assetType: h.type,
-          reason: `Initial portfolio construction — ${h.weight}% allocation ($${h.allocation.toLocaleString()}) at ${fmtUSD(pricePerShare)}/share × ${fmt(shares, 4)} shares`,
-        };
-      });
+      const initTxs = p.holdings.map((h, i) => ({
+        type: h.action === "SHORT" ? "SHORT" : "BUY",
+        symbol: h.symbol, name: h.name, amount: h.allocation, ts: execTime,
+        orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${String(i + 1).padStart(3, "0")}`,
+        executionTime: new Date(execTime).toISOString(),
+        pricePerShare: h.entryPrice || 0,
+        shares: h.shares || 0,
+        commission: 0, settlementDate, orderType: "MARKET", status: "FILLED",
+        weight: h.weight, assetType: h.type,
+        reason: h.entryPrice
+          ? `Initial portfolio construction — ${h.weight}% allocation ($${h.allocation.toLocaleString()}) at ${fmtPrice(h.entryPrice)}/share × ${fmt(h.shares, 4)} shares`
+          : `Initial portfolio construction — ${h.weight}% allocation ($${h.allocation.toLocaleString()}) — real-time price unavailable, tracking by allocation`,
+      }));
       if (initCash > 0) initTxs.push({ type: "CASH", symbol: "MONEY MKT", name: "Money Market Sweep", amount: initCash, ts: execTime, orderId: `ORD-${Date.now().toString(36).toUpperCase()}-CSH`, executionTime: new Date(execTime).toISOString(), pricePerShare: 1, shares: initCash, commission: 0, settlementDate: new Date(execTime).toISOString().slice(0, 10), orderType: "SWEEP", status: "SETTLED", weight: (initCash / SEED_CAPITAL * 100), assetType: "cash", reason: `Cash sweep to money market fund at 4.5% APY` });
       setTransactions(initTxs);
       setPortfolio({ ...p, id: Date.now(), createdTs: Date.now(), thesis, value: 1000000, createdAt: new Date().toISOString(), trackingData: [{ ts: Date.now(), value: 1000000 }], rebalanceThreshold: 5, userRiskProfile: riskProfile, userTimeHorizon: timeHorizon, userRebalFreq: rebalFreq });
@@ -1422,6 +1476,16 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
       const newH = JSON.parse(raw.replace(/```json|```/g, "").trim());
       newH.targetWeight = newH.weight;
       newH.currentWeight = newH.weight;
+      // Fetch real price for the new holding
+      const refreshQuotes = await fetchRealQuotes([newH]);
+      const rq = refreshQuotes[newH.symbol];
+      if (rq) {
+        newH.entryPrice = Math.round(rq.price * 10000) / 10000;
+        newH.shares = newH.allocation ? Math.round((newH.allocation / rq.price) * 100000000) / 100000000 : null;
+        newH.livePrice = rq.price;
+        newH.liveValue = newH.allocation;
+      }
+      newH.entryDate = new Date().toISOString();
       const updated = { ...portfolio, holdings: portfolio.holdings.map((old, i) => i === idx ? newH : old) };
       setPortfolio(updated);
       // Remove from excluded if it was excluded
@@ -1455,6 +1519,22 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
       const targetNAV = currentNAV; // Use current NAV, not seed capital
       if (Math.abs(total - targetNAV) > 0 && Math.abs(total - targetNAV) <= 50000) { p.holdings[0].allocation += Math.round(targetNAV - total - (p.cashPosition?.amount || 0)); p.holdings[0].weight = Math.round(p.holdings[0].allocation / (targetNAV / 100) * 10) / 10; }
       p.holdings = p.holdings.map(h => ({ ...h, targetWeight: h.weight, currentWeight: h.weight }));
+      // Preserve entryPrice/shares for existing holdings, fetch real for new ones
+      const oldHoldingsMap = {};
+      (portfolio.holdings || []).forEach(oh => { if (oh.entryPrice && oh.shares) oldHoldingsMap[oh.symbol] = oh; });
+      const newQuotes = await fetchRealQuotes(p.holdings.filter(h => !oldHoldingsMap[h.symbol]));
+      p.holdings = p.holdings.map(h => {
+        const old = oldHoldingsMap[h.symbol];
+        if (old) {
+          // Kept holding — preserve entry data, update allocation
+          return { ...h, entryPrice: old.entryPrice, shares: old.shares, entryDate: old.entryDate, livePrice: old.livePrice || old.entryPrice, liveValue: h.allocation };
+        }
+        // New holding — use real price
+        const q = newQuotes[h.symbol];
+        const ep = q ? q.price : null;
+        const sh = ep ? h.allocation / ep : null;
+        return { ...h, entryPrice: ep ? Math.round(ep * 10000) / 10000 : null, shares: sh ? Math.round(sh * 100000000) / 100000000 : null, entryDate: new Date().toISOString(), livePrice: ep, liveValue: h.allocation };
+      });
       const nc = p.cashPosition?.amount || 0;
       setCashBalance(nc);
       const newAllocTotal = p.holdings.reduce((s, h) => s + h.allocation, 0) + nc;
@@ -1472,42 +1552,55 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
   };
   weeklyUpdateRef.current = weeklyUpdate;
 
-  // Manual ETF creation
-  const launchManualETF = () => {
+  // Manual ETF creation — fetches REAL market prices like a brokerage
+  const launchManualETF = async () => {
     const totalW = manualHoldings.reduce((s, h) => s + (h.weight || 0), 0) + manualCashPct;
     if (Math.abs(totalW - 100) > 0.5) { setErr(`Weights must total 100%. Currently: ${fmt(totalW, 1)}%`); return; }
     const invalid = manualHoldings.find(h => !h.symbol.trim());
     if (invalid) { setErr("Every holding must have a ticker symbol."); return; }
     if (manualHoldings.length < 1) { setErr("Add at least one holding."); return; }
+    setLoading(true); setErr("");
     const cashAmt = Math.round(SEED_CAPITAL * manualCashPct / 100);
-    const holdings = manualHoldings.map((h, i) => ({
+    const rawHoldings = manualHoldings.map((h, i) => ({
       symbol: h.symbol.toUpperCase().trim(),
       name: h.name || h.symbol.toUpperCase().trim(),
       type: h.type || "stock",
       weight: h.weight,
       allocation: Math.round(SEED_CAPITAL * h.weight / 100),
-      action: "BUY",
-      conviction: "medium",
+      action: "BUY", conviction: "medium",
       role: i === 0 ? "Core" : "Satellite",
-      sector: "",
-      description: h.name || "",
+      sector: "", description: h.name || "",
       thesisConnection: manualStrategy || "Manual selection by portfolio manager.",
     }));
-    const manualExecTime = Date.now();
-    const manualSettlement = new Date(manualExecTime + 2 * 86400000).toISOString().slice(0, 10);
-    const initTxs = holdings.map((h, i) => {
-      const pps = h.type === "crypto" ? Math.round(Math.random() * 50000 + 100) : Math.round(Math.random() * 400 + 10);
-      const sh = h.allocation / pps;
+    // Fetch real prices for all holdings
+    const realQuotes = await fetchRealQuotes(rawHoldings);
+    console.log("[Manual] Real quotes fetched:", Object.keys(realQuotes).length, "of", rawHoldings.length);
+    const holdings = rawHoldings.map(h => {
+      const q = realQuotes[h.symbol];
+      const entryPrice = q ? q.price : null;
+      const shares = entryPrice ? h.allocation / entryPrice : null;
       return {
-        type: "BUY", symbol: h.symbol, name: h.name, amount: h.allocation, ts: manualExecTime,
-        orderId: `ORD-${manualExecTime.toString(36).toUpperCase()}-${String(i + 1).padStart(3, "0")}`,
-        executionTime: new Date(manualExecTime).toISOString(),
-        pricePerShare: Math.round(pps * 100) / 100, shares: Math.round(sh * 10000) / 10000,
-        commission: 0, settlementDate: manualSettlement, orderType: "MARKET", status: "FILLED",
-        weight: h.weight, assetType: h.type,
-        reason: `Initial allocation: ${h.weight}% = ${fmtUSD(h.allocation)} at ${fmtUSD(pps)}/share × ${fmt(sh, 4)} shares`,
+        ...h,
+        targetWeight: h.weight, currentWeight: h.weight,
+        entryPrice: entryPrice ? Math.round(entryPrice * 10000) / 10000 : null,
+        shares: shares ? Math.round(shares * 100000000) / 100000000 : null,
+        entryDate: new Date().toISOString(),
+        livePrice: entryPrice, liveValue: h.allocation,
       };
     });
+    const manualExecTime = Date.now();
+    const manualSettlement = new Date(manualExecTime + 2 * 86400000).toISOString().slice(0, 10);
+    const initTxs = holdings.map((h, i) => ({
+      type: "BUY", symbol: h.symbol, name: h.name, amount: h.allocation, ts: manualExecTime,
+      orderId: `ORD-${manualExecTime.toString(36).toUpperCase()}-${String(i + 1).padStart(3, "0")}`,
+      executionTime: new Date(manualExecTime).toISOString(),
+      pricePerShare: h.entryPrice || 0, shares: h.shares || 0,
+      commission: 0, settlementDate: manualSettlement, orderType: "MARKET", status: "FILLED",
+      weight: h.weight, assetType: h.type,
+      reason: h.entryPrice
+        ? `Initial allocation: ${h.weight}% = ${fmtUSD(h.allocation)} at ${fmtPrice(h.entryPrice)}/share × ${fmt(h.shares, 4)} shares`
+        : `Initial allocation: ${h.weight}% = ${fmtUSD(h.allocation)} — real-time price unavailable`,
+    }));
     if (cashAmt > 0) initTxs.push({ type: "CASH", symbol: "MONEY MKT", name: "Money Market Sweep", amount: cashAmt, ts: manualExecTime, orderId: `ORD-${manualExecTime.toString(36).toUpperCase()}-CSH`, executionTime: new Date(manualExecTime).toISOString(), pricePerShare: 1, shares: cashAmt, commission: 0, settlementDate: new Date(manualExecTime).toISOString().slice(0, 10), orderType: "SWEEP", status: "SETTLED", weight: manualCashPct, assetType: "cash", reason: `Cash sweep to money market fund at 4.5% APY` });
     setCashBalance(cashAmt);
     setTransactions(initTxs);
@@ -1520,7 +1613,7 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
     setPortfolio({ ...p, id: Date.now(), createdTs: Date.now(), thesis: manualStrategy, value: SEED_CAPITAL, createdAt: new Date().toISOString(), trackingData: [{ ts: Date.now(), value: SEED_CAPITAL }], rebalanceThreshold: 5, userRiskProfile: riskProfile, userTimeHorizon: timeHorizon, userRebalFreq: rebalFreq });
     setEditName(p.name); setEditTicker(p.ticker); setEditingWeights({}); setEditFee(0.5); setAutoSellPct(0); resetRebalDeadline(rebalFreq); setNameEdited(true);
     const allocs = {}; holdings.forEach((h, i) => { allocs[i] = h.allocation; }); setLiveAllocations(allocs);
-    setSaved(false); setExcludedIdx(new Set()); setErr("");
+    setSaved(false); setExcludedIdx(new Set()); setErr(""); setLoading(false);
   };
 
   return (
@@ -1547,6 +1640,7 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
             { l: "Dividend Income", t: "Design a conservative income-focused ETF for a retiree. Prioritize high-quality dividend stocks, investment-grade bonds, and gold. Target 4%+ yield with minimal volatility. Capital preservation is the priority." },
             { l: "Clean Energy", t: "Create a moderate-risk ETF capturing the global clean energy transition. Include solar, wind, battery/EV, uranium, and lithium companies. Add some commodity hedges. 7-year horizon targeting 10-12% returns." },
             { l: "Crypto-Forward", t: "Build an aggressive ETF with maximum crypto exposure balanced by traditional assets. Include BTC, ETH, SOL, and crypto-adjacent equities like COIN and MSTR. Hedge with gold and short-term bonds. High risk tolerance." },
+            { l: "Memecoin Degen", t: "Build a high-risk memecoin and speculative crypto ETF. Include top memecoins like DOGE, SHIB, PEPE, WIF, FLOKI, BONK, and POPCAT alongside BTC and ETH as anchors. Maximum volatility, maximum potential. This is pure speculation for educational purposes. Aggressive risk." },
             { l: "All-Weather", t: "Design a balanced all-weather portfolio inspired by Ray Dalio's approach. Equal risk allocation across stocks, long-term bonds, gold, commodities, and TIPS. Target low volatility with consistent returns across all economic regimes." },
           ].map(ex => <button key={ex.l} onClick={() => setThesis(ex.t)} style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.sub, padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>{ex.l}</button>)}
         </div>
@@ -1820,7 +1914,7 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
                 {openIdx === i && <div style={{ padding: "14px 18px 14px 18px", background: C.surface, borderBottom: `1px solid ${C.border}`, fontSize: 13, color: C.sub, lineHeight: 1.7 }}>
                   {h.description && <p style={{ color: C.text, fontSize: 12.5, margin: "0 0 8px", fontStyle: "italic", borderLeft: `2px solid ${C.accent}`, paddingLeft: 10 }}>{h.description}</p>}
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>{h.role && <span style={{ ...badge(h.role === "Hedge" ? C.teal : h.role === "Core" ? C.accent : h.role === "Growth Kicker" ? C.gold : h.role === "Income" ? C.green : C.sub) }}>{h.role}</span>}{h.sector && <span style={{ ...badge(C.dim) }}>{h.sector}</span>}{h.marketCap && h.marketCap !== "N/A" && <span style={{ ...badge(C.dim) }}>{h.marketCap}</span>}</div>
-                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>{h.action && <span style={{ ...badge(h.action === "BUY" ? C.green : h.action === "SHORT" ? "#f59e0b" : h.action === "SELL" ? C.red : C.teal), fontSize: 10 }}>{h.action}</span>}{h.conviction && <span style={{ ...badge(h.conviction === "high" ? C.green : h.conviction === "medium" ? C.gold : C.dim), fontSize: 10 }}>{h.conviction} conviction</span>}{(() => { const lv = liveAllocations[i] || h.allocation; const pnl = ((lv / h.allocation) - 1) * 100; return <span style={{ color: pnl >= 0 ? C.green : C.red, fontSize: 11, fontWeight: 700, fontFamily: mono }}>P&L: {pnl >= 0 ? "+" : ""}{fmt(pnl, 1)}% ({fmtUSD(Math.round(lv - h.allocation))})</span>; })()}{h.priceTarget && <span style={{ color: C.green, fontSize: 11, fontFamily: mono }}>Target: {h.priceTarget}</span>}{h.stopLoss && <span style={{ color: C.red, fontSize: 11, fontFamily: mono }}>Stop: {h.stopLoss}</span>}</div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>{h.action && <span style={{ ...badge(h.action === "BUY" ? C.green : h.action === "SHORT" ? "#f59e0b" : h.action === "SELL" ? C.red : C.teal), fontSize: 10 }}>{h.action}</span>}{h.conviction && <span style={{ ...badge(h.conviction === "high" ? C.green : h.conviction === "medium" ? C.gold : C.dim), fontSize: 10 }}>{h.conviction} conviction</span>}{(() => { const lv = liveAllocations[i] || h.allocation; const costB = h.entryPrice && h.shares ? h.entryPrice * h.shares : h.allocation; const pnl = ((lv / costB) - 1) * 100; return <span style={{ color: pnl >= 0 ? C.green : C.red, fontSize: 11, fontWeight: 700, fontFamily: mono }}>P&L: {pnl >= 0 ? "+" : ""}{fmt(pnl, 1)}% ({fmtUSD(Math.round(lv - costB))})</span>; })()}{h.entryPrice && <span style={{ color: C.dim, fontSize: 10, fontFamily: mono }}>Entry: {fmtPrice(h.entryPrice)}</span>}{(() => { const lp = livePricesRef.current[h.symbol]?.price || h.livePrice; return lp && lp !== h.entryPrice ? <span style={{ color: lp >= (h.entryPrice || 0) ? C.green : C.red, fontSize: 10, fontFamily: mono }}>Now: {fmtPrice(lp)}</span> : null; })()}{h.shares && <span style={{ color: C.dim, fontSize: 10, fontFamily: mono }}>Shares: {h.shares < 1 ? h.shares.toFixed(6) : fmt(h.shares, 4)}</span>}{h.priceTarget && <span style={{ color: C.green, fontSize: 11, fontFamily: mono }}>Target: {h.priceTarget}</span>}{h.stopLoss && <span style={{ color: C.red, fontSize: 11, fontFamily: mono }}>Stop: {h.stopLoss}</span>}</div>
                   {h.thesisConnection && <div style={{ marginBottom: 10, padding: "8px 12px", background: C.accentBg, border: `1px solid ${C.accentBorder}`, borderRadius: 6 }}><span style={{ color: C.accentLight, fontWeight: 700, fontSize: 10, fontFamily: mono, letterSpacing: 0.3 }}>THESIS CONNECTION: </span><span style={{ color: C.text, fontSize: 12 }}>{h.thesisConnection}</span></div>}
                   {h.financialMetrics && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: 6, marginBottom: 10 }}>
                     {[["Mkt Cap", h.financialMetrics.marketCapValue], ["LTM Rev", h.financialMetrics.ltmRevenue], ["EBITDA", h.financialMetrics.ebitda], ["EV/Rev", h.financialMetrics.evRevenue], ["EV/EBITDA", h.financialMetrics.evEbitda], ["P/E", h.financialMetrics.peRatio], ["Rev Growth", h.financialMetrics.revenueGrowth], ["Div Yield", h.financialMetrics.dividendYield]].filter(([,v]) => v && v !== "N/A").map(([k, v]) => (
@@ -2061,7 +2155,7 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
                       const active = portfolio.holdings.filter((_, i) => !excludedIdx.has(i));
                       const cashAdj = Math.round(cashBalance);
                       const liveTotal = active.reduce((s, h) => { const origIdx = portfolio.holdings.indexOf(h); return s + (liveAllocations[origIdx] || h.allocation); }, 0);
-                      const adjusted = { ...portfolio, holdings: active.map(h => { const origIdx = portfolio.holdings.indexOf(h); const liveVal = liveAllocations[origIdx] || h.allocation; return { ...h, weight: Math.round(liveVal / (liveTotal + cashAdj) * 1000) / 10, allocation: Math.round(liveVal), targetWeight: h.weight, currentWeight: Math.round(liveVal / (liveTotal + cashAdj) * 1000) / 10 }; }), value: Math.round(liveTotal + cashAdj), cashBalance: cashAdj, autoSellPct, transactions, navHistory };
+                      const adjusted = { ...portfolio, holdings: active.map(h => { const origIdx = portfolio.holdings.indexOf(h); const liveVal = liveAllocations[origIdx] || h.allocation; return { ...h, weight: Math.round(liveVal / (liveTotal + cashAdj) * 1000) / 10, liveValue: Math.round(liveVal), originalAllocation: h.originalAllocation || h.allocation, targetWeight: h.weight, currentWeight: Math.round(liveVal / (liveTotal + cashAdj) * 1000) / 10 }; }), value: Math.round(liveTotal + cashAdj), cashBalance: cashAdj, autoSellPct, transactions, navHistory };
                       const result = await savePortfolio(adjusted, false);
                       if (result === true) { setSaved(true); setShowSaveModal(false); }
                       else if (typeof result === "string") { setSaveErr(result); }
@@ -2078,7 +2172,7 @@ function Builder({ user, openAuth, savePortfolio, publishPortfolio, signOut }) {
                       const active = portfolio.holdings.filter((_, i) => !excludedIdx.has(i));
                       const cashAdj2 = Math.round(cashBalance);
                       const liveTotal2 = active.reduce((s, h) => { const origIdx = portfolio.holdings.indexOf(h); return s + (liveAllocations[origIdx] || h.allocation); }, 0);
-                      const adjusted = { ...portfolio, holdings: active.map(h => { const origIdx = portfolio.holdings.indexOf(h); const liveVal = liveAllocations[origIdx] || h.allocation; return { ...h, weight: Math.round(liveVal / (liveTotal2 + cashAdj2) * 1000) / 10, allocation: Math.round(liveVal), targetWeight: h.weight, currentWeight: Math.round(liveVal / (liveTotal2 + cashAdj2) * 1000) / 10 }; }), value: Math.round(liveTotal2 + cashAdj2), cashBalance: cashAdj2, autoSellPct, transactions, navHistory };
+                      const adjusted = { ...portfolio, holdings: active.map(h => { const origIdx = portfolio.holdings.indexOf(h); const liveVal = liveAllocations[origIdx] || h.allocation; return { ...h, weight: Math.round(liveVal / (liveTotal2 + cashAdj2) * 1000) / 10, liveValue: Math.round(liveVal), originalAllocation: h.originalAllocation || h.allocation, targetWeight: h.weight, currentWeight: Math.round(liveVal / (liveTotal2 + cashAdj2) * 1000) / 10 }; }), value: Math.round(liveTotal2 + cashAdj2), cashBalance: cashAdj2, autoSellPct, transactions, navHistory };
                       const result = await savePortfolio(adjusted, true);
                       if (result === true) { setSaved(true); setShowSaveModal(false); }
                       else if (typeof result === "string") { setSaveErr(result); }
@@ -2121,6 +2215,58 @@ function finnhubFetch(url) {
   return fetch(url);
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+//   REAL PRICE ENGINE — Maps symbols to Finnhub format, fetches real quotes
+//   This is the core of the brokerage: real entry prices, real shares, real P&L
+// ═══════════════════════════════════════════════════════════════════════
+
+// Crypto → Finnhub BINANCE exchange format
+const CRYPTO_FINNHUB = {
+  BTC: "BINANCE:BTCUSDT", ETH: "BINANCE:ETHUSDT", SOL: "BINANCE:SOLUSDT", XRP: "BINANCE:XRPUSDT",
+  ADA: "BINANCE:ADAUSDT", DOT: "BINANCE:DOTUSDT", AVAX: "BINANCE:AVAXUSDT", MATIC: "BINANCE:MATICUSDT",
+  LINK: "BINANCE:LINKUSDT", UNI: "BINANCE:UNIUSDT", DOGE: "BINANCE:DOGEUSDT", SHIB: "BINANCE:SHIBUSDT",
+  BNB: "BINANCE:BNBUSDT", LTC: "BINANCE:LTCUSDT", ATOM: "BINANCE:ATOMUSDT", NEAR: "BINANCE:NEARUSDT",
+  APT: "BINANCE:APTUSDT", ARB: "BINANCE:ARBUSDT", OP: "BINANCE:OPUSDT", FIL: "BINANCE:FILUSDT",
+  ICP: "BINANCE:ICPUSDT", HBAR: "BINANCE:HBARUSDT", XLM: "BINANCE:XLMUSDT", ALGO: "BINANCE:ALGOUSDT",
+  SUI: "BINANCE:SUIUSDT", SEI: "BINANCE:SEIUSDT", TIA: "BINANCE:TIAUSDT", INJ: "BINANCE:INJUSDT",
+  FET: "BINANCE:FETUSDT", RNDR: "BINANCE:RNDRUSDT", TAO: "BINANCE:TAOUSDT", TRX: "BINANCE:TRXUSDT",
+  TON: "BINANCE:TONUSDT", STX: "BINANCE:STXUSDT", PEPE: "BINANCE:PEPEUSDT", WIF: "BINANCE:WIFUSDT",
+  FLOKI: "BINANCE:FLOKIUSDT", BONK: "BINANCE:BONKUSDT", AAVE: "BINANCE:AAVEUSDT", MKR: "BINANCE:MKRUSDT",
+  CRV: "BINANCE:CRVUSDT", PENDLE: "BINANCE:PENDLEUSDT", DYDX: "BINANCE:DYDXUSDT", JUP: "BINANCE:JUPUSDT",
+  LDO: "BINANCE:LDOUSDT", GRT: "BINANCE:GRTUSDT", AR: "BINANCE:ARUSDT", THETA: "BINANCE:THETAUSDT",
+  IMX: "BINANCE:IMXUSDT", GALA: "BINANCE:GALAUSDT", SAND: "BINANCE:SANDUSDT", MANA: "BINANCE:MANAUSDT",
+  AXS: "BINANCE:AXSUSDT", RUNE: "BINANCE:RUNEUSDT", VET: "BINANCE:VETUSDT", ETC: "BINANCE:ETCUSDT",
+  BCH: "BINANCE:BCHUSDT", COMP: "BINANCE:COMPUSDT", SNX: "BINANCE:SNXUSDT", KAS: "BINANCE:KASUSDT",
+  WLD: "BINANCE:WLDUSDT", OCEAN: "BINANCE:OCEANUSDT", EGLD: "BINANCE:EGLDUSDT", FLOW: "BINANCE:FLOWUSDT",
+  NEAR: "BINANCE:NEARUSDT", ORDI: "BINANCE:ORDIUSDT", BOME: "BINANCE:BOMEUSDT", ENS: "BINANCE:ENSUSDT",
+  GMX: "BINANCE:GMXUSDT", QNT: "BINANCE:QNTUSDT",
+};
+
+// Convert any symbol to Finnhub API format
+const toFinnhub = (sym, type) => {
+  if (type === "crypto" || CRYPTO_FINNHUB[sym]) return CRYPTO_FINNHUB[sym] || `BINANCE:${sym}USDT`;
+  return sym; // Stocks/ETFs use ticker as-is
+};
+
+// Batch-fetch real quotes from Finnhub. Returns { SYMBOL: { price, prevClose } }
+const fetchRealQuotes = async (holdings) => {
+  const quotes = {};
+  const unique = [...new Set((holdings || []).map(h => h.symbol))];
+  await Promise.all(unique.slice(0, 25).map(async (sym) => {
+    try {
+      const type = detectAssetType(sym);
+      const fhSym = toFinnhub(sym, type);
+      const r = await finnhubFetch(`https://finnhub.io/api/v1/quote?symbol=${fhSym}&token=${FINNHUB_KEY}`);
+      const q = await r.json();
+      if (q && q.c > 0 && isFinite(q.c)) {
+        const pc = (q.pc > 0 && isFinite(q.pc)) ? q.pc : q.c;
+        quotes[sym] = { price: q.c, prevClose: pc, high: q.h || q.c, low: q.l || q.c, open: q.o || pc };
+      }
+    } catch (e) { /* silent — holding just won't have live data */ }
+  }));
+  return quotes;
+};
+
 function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPortfolios }) {
   const [btIdx, setBtIdx] = useState(null); const [btMonths, setBtMonths] = useState(60); const [btData, setBtData] = useState(null);
   const [rebalIdx, setRebalIdx] = useState(null);
@@ -2129,64 +2275,75 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
   const [compareWith, setCompareWith] = useState(null);
   const portfoliosRef = useRef(portfolios); portfoliosRef.current = portfolios;
 
-  // Real-time tracking — fetch live quotes for holding symbols
+  // ══════ REAL-TIME PORTFOLIO TRACKING ══════
+  // Fetches actual market prices and computes: holdingValue = shares × currentPrice
+  // This is identical to how TD Ameritrade, E*Trade, Schwab compute your balance.
   useEffect(() => {
     if (!user || portfolios.length === 0) return;
     let cancelled = false;
     const fetchLiveValues = async () => {
-      const allSyms = [...new Set(portfoliosRef.current.flatMap(p => p.holdings.map(h => h.symbol)))];
-      const quotes = {};
-      try {
-        const batch = allSyms.slice(0, 10);
-        await Promise.all(batch.map(sym =>
-          finnhubFetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_KEY}`)
-            .then(r => r.json())
-            .then(q => { if (q && q.c > 0) quotes[sym] = q; })
-            .catch(() => {})
-        ));
-      } catch (e) { /* proceed */ }
+      // Collect all unique symbols across all portfolios
+      const allHoldings = portfoliosRef.current.flatMap(p => (p.holdings || []));
+      const quotes = await fetchRealQuotes(allHoldings);
       if (cancelled) return;
+      const quotedCount = Object.keys(quotes).length;
+      if (quotedCount > 0) console.log("[Portfolios] Live quotes:", quotedCount, "symbols");
+      
       portfoliosRef.current.forEach((p, idx) => {
-        let newVal;
-        const hasLiveData = p.holdings.some(h => quotes[h.symbol]);
-        if (hasLiveData) {
-          let liveTotal = 0;
-          const newHoldings = p.holdings.map(h => {
-            const q = quotes[h.symbol];
-            if (q) {
-              const refPrice = q.pc || q.c;
-              const shares = h.allocation / refPrice;
-              const holdingVal = shares * q.c;
-              const pctChange = ((q.c - q.pc) / q.pc) * 100;
-              liveTotal += holdingVal;
-              return { ...h, currentWeight: h.weight + pctChange * 0.3, livePrice: q.c, dailyChange: pctChange, liveValue: Math.round(holdingVal) };
+        if (!p.holdings || p.holdings.length === 0) return;
+        const hasAnyQuote = p.holdings.some(h => quotes[h.symbol]);
+        
+        let liveTotal = 0;
+        const newHoldings = p.holdings.map(h => {
+          const q = quotes[h.symbol];
+          if (q && h.shares && h.shares > 0) {
+            // REAL BROKERAGE MATH: value = shares × current market price
+            // Cost basis = original investment, computed from entryPrice × shares (most reliable)
+            const costBasis = h.entryPrice ? h.entryPrice * h.shares : (h.originalAllocation || h.allocation);
+            const isShort = h.action === "SHORT";
+            let holdingVal;
+            if (isShort) {
+              holdingVal = costBasis + (h.entryPrice - q.price) * h.shares;
+            } else {
+              holdingVal = h.shares * q.price;
             }
-            liveTotal += h.allocation;
-            return { ...h, currentWeight: h.currentWeight || h.weight, liveValue: h.allocation };
-          });
-          const totalW = newHoldings.reduce((s, h) => s + Math.max(0.1, h.currentWeight), 0);
-          const normalized = newHoldings.map(h => ({ ...h, currentWeight: Math.round((Math.max(0.1, h.currentWeight) / totalW) * 1000) / 10 }));
-          newVal = Math.round(liveTotal);
-          const newTracking = [...(p.trackingData || []), { ts: Date.now(), value: newVal }].slice(-200);
-          updatePortfolio(idx, { ...p, value: newVal, trackingData: newTracking, holdings: normalized, liveData: true });
-        } else {
-          // Fallback: simulated drift — MARKET-AWARE
-          let newVal = p.value;
-          const newHoldings = p.holdings.map(h => {
-            if (!isMarketOpen(h.type)) {
-              // Market closed — no price change
-              return { ...h, currentWeight: h.currentWeight || h.weight, liveValue: h.liveValue || h.allocation };
-            }
-            const d = (sr(Date.now() / 1000 + h.symbol.charCodeAt(0)) - 0.5) * 1.2;
-            return { ...h, currentWeight: Math.max(1, (h.currentWeight || h.weight) + d), liveValue: Math.round(h.allocation * (1 + d * 0.01)) };
-          });
-          newVal = newHoldings.reduce((s, h) => s + (h.liveValue || h.allocation), 0) + (p.cashBalance || 0);
-          newVal = Math.round(newVal);
-          const newTracking = [...(p.trackingData || []), { ts: Date.now(), value: newVal }].slice(-200);
-          const totalW = newHoldings.reduce((s, h) => s + (h.currentWeight || h.weight), 0);
-          const normalized = newHoldings.map(h => ({ ...h, currentWeight: Math.round(((h.currentWeight || h.weight) / totalW) * 1000) / 10 }));
-          updatePortfolio(idx, { ...p, value: newVal, trackingData: newTracking, holdings: normalized });
-        }
+            const pnl = holdingVal - costBasis;
+            const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
+            const dayChange = (q.prevClose > 0) ? ((q.price - q.prevClose) / q.prevClose) * 100 : 0;
+            liveTotal += holdingVal;
+            return {
+              ...h,
+              livePrice: q.price, liveValue: Math.round(holdingVal),
+              dailyChange: isFinite(dayChange) ? dayChange : 0,
+              pnl: Math.round(pnl), pnlPct: isFinite(pnlPct) ? pnlPct : 0,
+              currentWeight: h.weight + (pnlPct * 0.1), // Weight drifts proportionally to P&L
+            };
+          } else if (q && h.allocation > 0) {
+            // Has quote but no shares data (legacy portfolio) — estimate shares from allocation/prevClose
+            const estimatedShares = h.allocation / (q.prevClose || q.price);
+            const holdingVal = estimatedShares * q.price;
+            const dayChange = ((q.price - q.prevClose) / q.prevClose) * 100;
+            liveTotal += holdingVal;
+            return {
+              ...h,
+              livePrice: q.price, liveValue: Math.round(holdingVal),
+              dailyChange: isFinite(dayChange) ? dayChange : 0,
+              shares: estimatedShares, entryPrice: q.prevClose,
+              currentWeight: h.weight + (dayChange * 0.3),
+            };
+          } else {
+            // No quote available — freeze at last known value
+            liveTotal += h.liveValue || h.allocation;
+            return { ...h, currentWeight: h.currentWeight || h.weight, liveValue: h.liveValue || h.allocation };
+          }
+        });
+        
+        const cashBal = p.cashBalance || 0;
+        const newVal = Math.round(liveTotal + cashBal);
+        const totalW = newHoldings.reduce((s, h) => s + Math.max(0.1, h.currentWeight || h.weight), 0);
+        const normalized = newHoldings.map(h => ({ ...h, currentWeight: Math.round((Math.max(0.1, h.currentWeight || h.weight) / totalW) * 1000) / 10 }));
+        const newTracking = [...(p.trackingData || []), { ts: Date.now(), value: newVal }].slice(-200);
+        updatePortfolio(idx, { ...p, value: newVal, trackingData: newTracking, holdings: normalized, liveData: hasAnyQuote });
       });
     };
     fetchLiveValues();
@@ -2194,12 +2351,27 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
     return () => { cancelled = true; clearInterval(iv); };
   }, [user, portfolios.length]);
 
-  const runBacktest = (idx, months) => { setBtIdx(idx); setBtMonths(months); setBtData(genBacktest(months, portfolios[idx].id || idx, portfolios[idx].holdings)); };
+  const runBacktest = (idx, months) => { setBtIdx(idx); setBtMonths(months); setBtData(genBacktest(months, portfolios[idx]?.id || idx, portfolios[idx]?.holdings || [])); };
 
   const doRebalance = (idx) => {
     const p = portfolios[idx];
     const totalVal = p.value || 1000000;
-    const rebalanced = p.holdings.map(h => ({ ...h, currentWeight: h.targetWeight, allocation: Math.round((h.targetWeight / 100) * totalVal) }));
+    const rebalanced = p.holdings.map(h => {
+      const newAlloc = Math.round((h.targetWeight / 100) * totalVal);
+      const currentPrice = h.livePrice || h.entryPrice;
+      // Rebalance = sell old position, buy new one at current price → new cost basis
+      const newShares = currentPrice ? newAlloc / currentPrice : h.shares;
+      return {
+        ...h,
+        currentWeight: h.targetWeight,
+        allocation: newAlloc,
+        originalAllocation: newAlloc, // New cost basis after rebalance
+        entryPrice: currentPrice || h.entryPrice,
+        shares: newShares ? Math.round(newShares * 100000000) / 100000000 : h.shares,
+        entryDate: new Date().toISOString(),
+        liveValue: newAlloc,
+      };
+    });
     updatePortfolio(idx, { ...p, holdings: rebalanced, lastRebalance: Date.now() });
     setRebalIdx(null);
   };
@@ -2235,19 +2407,22 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {portfolios.map((p, idx) => {
-            const gain = ((p.value - 1000000) / 1000000) * 100;
+            if (!p) return null;
+            p = { ...p, holdings: p.holdings || [] }; // Ensure holdings is always an array
+            const holdings = p.holdings;
+            const gain = (((p.value || 1000000) - 1000000) / 1000000) * 100;
             const isExpanded = expandedIdx === idx;
             const trackPts = (p.trackingData || []).length > 1 ? p.trackingData.map((t) => ({ price: t.value })) : null;
-            const maxDrift = p.holdings ? Math.max(...p.holdings.map(h => Math.abs((h.currentWeight || h.weight) - (h.targetWeight || h.weight)))) : 0;
+            const maxDrift = holdings.length > 0 ? Math.max(...holdings.map(h => Math.abs((h.currentWeight || h.weight) - (h.targetWeight || h.weight)))) : 0;
             const needsRebalance = maxDrift > (p.rebalanceThreshold || 5);
             const txs = p.transactions || [];
             const navPts = p.navHistory || [];
             const cashBal = p.cashBalance || p.cashPosition?.amount || 0;
             // Compute key metrics
-            const totalHoldingsVal = p.holdings.reduce((s, h) => s + (h.liveValue || h.allocation), 0);
-            const dayChange = p.holdings.reduce((s, h) => s + ((h.dailyChange || 0) * (h.liveValue || h.allocation) / 100), 0);
+            const totalHoldingsVal = holdings.reduce((s, h) => s + (h.liveValue || h.allocation), 0);
+            const dayChange = holdings.reduce((s, h) => s + ((h.dailyChange || 0) * (h.liveValue || h.allocation) / 100), 0);
             const typeBreakdown = {};
-            p.holdings.forEach(h => { typeBreakdown[h.type] = (typeBreakdown[h.type] || 0) + (h.currentWeight || h.weight); });
+            holdings.forEach(h => { typeBreakdown[h.type] = (typeBreakdown[h.type] || 0) + (h.currentWeight || h.weight); });
 
             return (
               <div key={idx} style={{ ...cardS(), padding: 0, overflow: "hidden" }}>
@@ -2287,13 +2462,22 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
                       <button onClick={() => { setActiveTab("performance"); if (!btData || btIdx !== idx) runBacktest(idx, 60); }} style={tabBtn("performance")}>📈 Performance</button>
                       <button onClick={() => setActiveTab("rebalance")} style={tabBtn("rebalance")}>{needsRebalance ? "⚠" : "⚖"} Rebalance</button>
                       <button onClick={() => setActiveTab("compare")} style={tabBtn("compare")}>🔀 Compare</button>
-                      <div style={{ marginLeft: "auto" }}>
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
                         <button onClick={() => {
-                          const report = { name: p.name, ticker: p.ticker, strategy: p.strategy, riskProfile: p.riskProfile, benchmark: p.benchmark, fee: p.fee, value: p.value, createdAt: p.createdAt, thesis: p.thesis, holdings: p.holdings.map(h => ({ symbol: h.symbol, name: h.name, type: h.type, weight: h.weight, allocation: h.allocation, rationale: h.rationale })), transactions: txs };
+                          const report = { name: p.name, ticker: p.ticker, strategy: p.strategy, riskProfile: p.riskProfile, benchmark: p.benchmark, fee: p.fee, value: p.value, createdAt: p.createdAt, thesis: p.thesis, holdings: (p.holdings || []).map(h => ({ symbol: h.symbol, name: h.name, type: h.type, weight: h.weight, allocation: h.allocation, rationale: h.rationale })), transactions: txs };
                           const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
                           const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `${(p.ticker || "etf").replace(/\s+/g, "-")}-report.json`; a.click(); URL.revokeObjectURL(url);
                         }} style={{ ...btnO(), fontSize: 10, padding: "4px 10px" }}>📄 Export</button>
-                        <button onClick={() => shareToX(`📊 My ETF "${p.name}" ${p.ticker ? `($${p.ticker})` : ""} is ${gain >= 0 ? "up" : "down"} ${gain >= 0 ? "+" : ""}${fmt(gain, 2)}% — now at ${fmtUSD(p.value)} from $1M seed capital!\n\n${p.holdings.length} holdings | ${p.fee || 0}% expense ratio | ${p.riskProfile || "moderate"} risk\n\nBuild your own AI-powered ETF free at etfsimulator.com 🚀`)} style={{ ...btnO(), fontSize: 10, padding: "4px 10px" }}>𝕏 Share</button>
+                        <button onClick={() => shareToX(`📊 My ETF "${p.name}" ${p.ticker ? `($${p.ticker})` : ""} is ${gain >= 0 ? "up" : "down"} ${gain >= 0 ? "+" : ""}${fmt(gain, 2)}% — now at ${fmtUSD(p.value)} from $1M seed capital!\n\n${(p.holdings || []).length} holdings | ${p.fee || 0}% expense ratio | ${p.riskProfile || "moderate"} risk\n\nBuild your own AI-powered ETF free at etfsimulator.com 🚀`)} style={{ ...btnO(), fontSize: 10, padding: "4px 10px" }}>𝕏 Share</button>
+                        <button onClick={async () => {
+                          if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+                          if (p.dbId) {
+                            const { error } = await supabase.from("portfolios").delete().eq("id", p.dbId);
+                            if (error) { alert("Delete failed: " + error.message); return; }
+                          }
+                          setPortfolios(prev => prev.filter((_, i) => i !== idx));
+                          setExpandedIdx(null);
+                        }} style={{ ...btnO(), fontSize: 10, padding: "4px 10px", color: C.red, borderColor: `${C.red}44` }}>🗑 Delete</button>
                       </div>
                     </div>
 
@@ -2363,8 +2547,9 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
                         </div>
                         {p.holdings.map((h, i) => {
                           const holdVal = h.liveValue || h.allocation;
-                          const pnl = holdVal - h.allocation;
-                          const pnlPct = h.allocation > 0 ? (pnl / h.allocation) * 100 : 0;
+                          const costBasis = (h.entryPrice && h.shares) ? h.entryPrice * h.shares : (h.originalAllocation || h.allocation);
+                          const pnl = holdVal - costBasis;
+                          const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
                           return (
                             <div key={i} style={{ display: "grid", gridTemplateColumns: "38px 50px 1fr 70px 90px 80px 70px", padding: "10px 20px", borderBottom: `1px solid ${C.border}`, alignItems: "center", fontSize: 12, minWidth: 540 }}>
                               <span style={{ color: C.dim, fontFamily: mono }}>{String(i + 1).padStart(2, "0")}</span>
@@ -2372,6 +2557,11 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
                               <div>
                                 <span style={{ color: C.text, fontWeight: 600 }}>{h.symbol}</span>
                                 <span style={{ color: C.dim, fontSize: 10, marginLeft: 6 }}>{h.name}</span>
+                                {(h.entryPrice || h.shares) && <div style={{ display: "flex", gap: 8, marginTop: 2, flexWrap: "wrap" }}>
+                                  {h.entryPrice && <span style={{ color: C.dim, fontSize: 8.5, fontFamily: mono }}>Entry: {fmtPrice(h.entryPrice)}</span>}
+                                  {h.livePrice && <span style={{ color: (h.livePrice >= (h.entryPrice || 0)) ? C.green : C.red, fontSize: 8.5, fontFamily: mono }}>Now: {fmtPrice(h.livePrice)}</span>}
+                                  {h.shares && <span style={{ color: C.dim, fontSize: 8.5, fontFamily: mono }}>{h.shares < 1 ? h.shares.toFixed(6) : fmt(h.shares, 2)} shares</span>}
+                                </div>}
                                 {h.rationale && <div style={{ color: C.dim, fontSize: 9.5, marginTop: 2, maxWidth: 300, lineHeight: 1.3 }}>{(h.rationale || "").slice(0, 80)}{(h.rationale || "").length > 80 ? "…" : ""}</div>}
                               </div>
                               <span style={{ color: C.text, fontFamily: mono, fontSize: 11.5 }}>{fmt(h.currentWeight || h.weight, 1)}%</span>
@@ -3605,10 +3795,48 @@ export default function App() {
         const uname = u.user_metadata?.username || userName;
         console.log("[Auth] ✓ Authenticated:", u.email, "uid:", u.id, "username:", uname);
         setUser({ name: userName, username: uname, email: u.email, id: u.id });
-        // Load user's portfolios from Supabase
-        const { data, error } = await supabase.from("portfolios").select("*").eq("user_id", u.id).order("created_at", { ascending: false });
-        console.log("[Auth] Loaded portfolios:", data?.length || 0, error ? "ERROR: " + error.message : "OK");
-        if (data) setPortfolios(data.map(row => ({ ...row.portfolio_data, id: row.id, isPublic: row.is_public, dbId: row.id })));
+        // Load user's portfolios from Supabase with retry
+        const loadPortfolios = async (attempt = 1) => {
+          try {
+            const { data, error } = await supabase.from("portfolios").select("*").eq("user_id", u.id).order("created_at", { ascending: false });
+            if (error) throw error;
+            console.log("[Auth] Loaded portfolios:", data?.length || 0);
+            if (data && data.length > 0) {
+              const cleaned = data.map(row => {
+                const pd = row.portfolio_data || {};
+                return {
+                  ...pd,
+                  id: row.id, dbId: row.id, isPublic: row.is_public,
+                  name: pd.name || row.name || "Unnamed Portfolio",
+                  holdings: Array.isArray(pd.holdings) ? pd.holdings : (Array.isArray(row.holdings) ? row.holdings : []),
+                  value: pd.value || row.value || 1000000,
+                  fee: pd.fee || row.fee || 0,
+                  thesis: pd.thesis || row.thesis || "",
+                  strategy: pd.strategy || row.strategy || "",
+                  ticker: pd.ticker || row.ticker || "",
+                  riskProfile: pd.riskProfile || row.risk_profile || "",
+                  transactions: Array.isArray(pd.transactions) ? pd.transactions : [],
+                  navHistory: Array.isArray(pd.navHistory) ? pd.navHistory : [],
+                  trackingData: Array.isArray(pd.trackingData) ? pd.trackingData : [],
+                  cashBalance: pd.cashBalance || 0,
+                  createdAt: pd.createdAt || row.created_at || new Date().toISOString(),
+                };
+              }).filter(p => p.holdings.length > 0); // Only show portfolios that have holdings
+              setPortfolios(cleaned);
+            } else {
+              setPortfolios([]);
+            }
+          } catch (err) {
+            console.error("[Auth] ✗ Portfolio load failed (attempt " + attempt + "):", err.message);
+            if (attempt < 3) {
+              console.log("[Auth] Retrying in 2s...");
+              setTimeout(() => loadPortfolios(attempt + 1), 2000);
+            } else {
+              setPortfolios([]);
+            }
+          }
+        };
+        loadPortfolios();
       } else {
         console.log("[Auth] No session — user logged out or not authenticated");
         setUser(null); setPortfolios([]);
@@ -3619,7 +3847,7 @@ export default function App() {
       .then(({ data, error }) => {
         if (error) console.error("[DB] ✗ Failed to load public portfolios:", error.message);
         else console.log("[DB] ✓ Connected to Supabase. Public portfolios loaded:", data?.length || 0);
-        if (data) setPublicPortfolios(data.map(row => { const pd = row.portfolio_data || {}; const val = pd.value || row.value || 1000000; return { ...pd, id: row.id, isPublic: true, creator: pd.creator || "Anonymous", value: val, gain: Math.round(((val - 1000000) / 1000000) * 10000) / 100, fee: pd.fee || row.fee || 0, holdingCount: pd.holdings?.length || row.holdings?.length || 10, thesis: pd.thesis || pd.strategy || row.thesis || "" }; }));
+        if (data) setPublicPortfolios(data.map(row => { const pd = row.portfolio_data || {}; const val = pd.value || row.value || 1000000; const h = Array.isArray(pd.holdings) ? pd.holdings : (Array.isArray(row.holdings) ? row.holdings : []); return { ...pd, id: row.id, isPublic: true, creator: pd.creator || "Anonymous", value: val, gain: Math.round(((val - 1000000) / 1000000) * 10000) / 100, fee: pd.fee || row.fee || 0, holdingCount: h.length, holdings: h, thesis: pd.thesis || pd.strategy || row.thesis || "", transactions: Array.isArray(pd.transactions) ? pd.transactions : [] }; }));
       });
     return () => subscription.unsubscribe();
   }, []);
@@ -3658,6 +3886,15 @@ export default function App() {
           thesisConnection: h.thesisConnection || "", exitTrigger: h.exitTrigger || "",
           financialMetrics: h.financialMetrics || {},
           priceTarget: h.priceTarget || "", stopLoss: h.stopLoss || "",
+          // BROKERAGE FIELDS — critical for P&L calculation on reload
+          entryPrice: h.entryPrice || null,
+          shares: h.shares || null,
+          entryDate: h.entryDate || null,
+          livePrice: h.livePrice || h.entryPrice || null,
+          liveValue: h.liveValue || h.allocation,
+          originalAllocation: h.originalAllocation || h.allocation, // COST BASIS — never changes
+          targetWeight: h.targetWeight || h.weight,
+          currentWeight: h.currentWeight || h.weight,
         }));
         const portfolioData = {
           name: p.name, ticker: p.ticker, strategy: p.strategy, riskProfile: p.riskProfile || p.userRiskProfile,
