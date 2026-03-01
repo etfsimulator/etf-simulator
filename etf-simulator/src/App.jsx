@@ -2349,7 +2349,7 @@ function Portfolios({ user, openAuth, portfolios, go, updatePortfolio, publicPor
           }
         });
         
-        const cashBal = p.cashBalance || 0;
+        const cashBal = p.cashBalance || p.cashPosition?.amount || 0;
         const newVal = Math.round(liveTotal + cashBal);
         const totalW = newHoldings.reduce((s, h) => s + Math.max(0.1, h.currentWeight || h.weight), 0);
         const normalized = newHoldings.map(h => ({ ...h, currentWeight: Math.round((Math.max(0.1, h.currentWeight || h.weight) / totalW) * 1000) / 10 }));
@@ -3452,66 +3452,85 @@ function Pricing({ openAuth, user }) {
 
 function Roadmap({ go }) {
   const liveFeatures = [
-    { icon: "🧠", title: "AI Portfolio Generator" },
-    { icon: "📊", title: "Performance Analytics" },
-    { icon: "📈", title: "Real-time Leaderboard" },
-    { icon: "🔒", title: "Secure Authentication" },
+    { icon: "🧠", title: "AI Portfolio Generator", desc: "Grok-3 powered ETF construction with 10-holding institutional-grade portfolios" },
+    { icon: "💹", title: "Real-Time Market Data", desc: "Live Finnhub API integration — real prices, real P&L, real shares tracking" },
+    { icon: "🏦", title: "Brokerage-Grade Accounting", desc: "Entry prices, share counts, cost basis, P&L — matching TD Ameritrade logic" },
+    { icon: "📊", title: "Wall Street Dashboard", desc: "6-tab portfolio view: Overview, Holdings, Transactions, Performance, Rebalance, Compare" },
+    { icon: "🏆", title: "Competitive Leaderboard", desc: "Full portfolio transparency with rankings, charts, and expandable dashboards" },
+    { icon: "📚", title: "Investment Education", desc: "16 comprehensive lessons from basics to advanced portfolio theory" },
+    { icon: "🪙", title: "152 Crypto Assets", desc: "Full crypto coverage: majors, DeFi, L1/L2, memecoins, AI tokens, gaming" },
+    { icon: "📱", title: "Mobile Responsive", desc: "Full functionality across desktop, tablet, and phone" },
+    { icon: "🔐", title: "Auth & Cloud Persistence", desc: "Supabase auth with portfolios synced across devices" },
+    { icon: "𝕏", title: "Social Sharing", desc: "Share portfolio performance to X from 5 locations across the platform" },
   ];
   const phases = [
-    { num: 1, label: "Phase 1", timing: "Weeks 1-2", title: "Fix Critical Issues", desc: "Establish credibility and fix foundational gaps", color: C.accent, items: [
-      { icon: "⚡", title: "Real-time Market Data API", desc: "Integrate live market data from professional sources" },
-      { icon: "📚", title: "Educational Content", desc: "Add 10-15 core lessons with video tutorials" },
-      { icon: "👥", title: "Community Features", desc: "User profiles and portfolio sharing" },
-      { icon: "🔗", title: "Portfolio Sharing", desc: "Share and clone portfolios with community" },
-      { icon: "📱", title: "Social Integration", desc: "Share achievements on social media" },
+    { num: 1, label: "Phase 1", timing: "Q2 2026", title: "Platform Hardening & Growth", status: "IN PROGRESS", desc: "Scale the user base, harden the infrastructure, and prepare for institutional features", color: C.accent, items: [
+      { icon: "⚡", title: "Multi-Source Market Data", desc: "Redundant price feeds (Finnhub + Alpha Vantage + Polygon.io) for 99.9% uptime and sub-second quotes" },
+      { icon: "📊", title: "Advanced Risk Analytics", desc: "Correlation matrices, Value-at-Risk (VaR), sector exposure heatmaps, and factor decomposition" },
+      { icon: "🔔", title: "Smart Alerts & Notifications", desc: "Email and push notifications for price targets, stop losses, rebalance triggers, and earnings events" },
+      { icon: "👥", title: "Community & Social", desc: "User profiles, portfolio cloning, strategy discussions, and peer-to-peer mentorship" },
+      { icon: "📱", title: "Native Mobile Apps", desc: "iOS and Android apps with push notifications, biometric auth, and offline portfolio viewing" },
     ]},
-    { num: 2, label: "Phase 2", timing: "Months 1-2", title: "Build Competitive Moat", desc: "Advanced features that competitors can't easily replicate", color: C.gold, items: [
-      { icon: "📊", title: "Advanced Analytics", desc: "Correlation matrices, sector exposure, risk decomposition" },
-      { icon: "✨", title: "AI Recommendations", desc: "Personalized portfolio suggestions based on goals" },
-      { icon: "💸", title: "Paper Trading", desc: "Virtual money trading with real market prices" },
-      { icon: "💬", title: "Community Forums", desc: "Discussions, Q&A, and peer learning" },
-      { icon: "🔔", title: "Smart Alerts", desc: "Email notifications for portfolio events" },
+    { num: 2, label: "Phase 2", timing: "Q3 2026", title: "Paper Trading & Execution Engine", status: "PLANNED", desc: "Build the execution infrastructure that bridges simulation and real markets", color: C.gold, items: [
+      { icon: "📝", title: "Paper Trading Engine", desc: "Simulated order book with limit orders, stop losses, trailing stops, and GTC/day orders — executed against real-time market data" },
+      { icon: "🔌", title: "Brokerage API Integration", desc: "Connect to Alpaca, Interactive Brokers, and Tradier APIs for real-time order simulation with actual market microstructure" },
+      { icon: "📈", title: "Options & Derivatives", desc: "Covered calls, protective puts, and basic options strategies within ETF portfolios" },
+      { icon: "🤖", title: "AI Portfolio Autopilot", desc: "Automated weekly rebalancing, tax-loss harvesting simulation, and dividend reinvestment driven by AI" },
+      { icon: "💼", title: "Model Portfolios Marketplace", desc: "Top performers can publish model portfolios that others subscribe to — the foundation of our advisor platform" },
     ]},
-    { num: 3, label: "Phase 3", timing: "Month 3+", title: "Scale & Monetize", desc: "Expand reach and build sustainable revenue streams", color: C.green, items: [
-      { icon: "👑", title: "Premium Features", desc: "Advanced analytics, API access, priority support" },
-      { icon: "📱", title: "Mobile Apps", desc: "Native iOS and Android applications" },
-      { icon: "🌐", title: "Brokerage Partnerships", desc: "One-click portfolio execution with partners" },
-      { icon: "🤝", title: "Affiliate Program", desc: "Earn commissions by referring users" },
-      { icon: "🏢", title: "White-Label Solutions", desc: "Enterprise platform for institutions" },
+    { num: 3, label: "Phase 3", timing: "Q4 2026", title: "Real Money — Live Trading", status: "PLANNED", desc: "SEC/FINRA compliance, brokerage partnerships, and the transition from simulation to real capital", color: "#f59e0b", items: [
+      { icon: "🏛", title: "Regulatory Compliance", desc: "SEC Registered Investment Adviser (RIA) filing, FINRA broker-dealer partnership, and KYC/AML integration" },
+      { icon: "💰", title: "Real Money Accounts", desc: "Connected brokerage accounts via Plaid — users can fund accounts and execute real trades through our platform" },
+      { icon: "🔗", title: "One-Click ETF Execution", desc: "Turn any AI-generated portfolio into real market orders with one click — fractional shares, commission-free" },
+      { icon: "🛡", title: "SIPC Insurance & Custody", desc: "Assets held at partner custodian (Apex Clearing / DriveWealth) with SIPC protection up to $500K" },
+      { icon: "📋", title: "Tax Reporting", desc: "Automated 1099 generation, wash sale tracking, and tax-loss harvesting for real portfolios" },
+    ]},
+    { num: 4, label: "Phase 4", timing: "2027", title: "Launch Real ETFs", status: "VISION", desc: "File with the SEC to launch our own ETF products — AI-managed funds available on every major exchange", color: C.green, items: [
+      { icon: "📜", title: "ETF Registration (SEC Form N-1A)", desc: "File to create ETF Simulator-branded funds: AIETF (AI Growth), MEME (Memecoin Index), SPFD (Cultural Impact)" },
+      { icon: "🏦", title: "Institutional Fund Management", desc: "Licensed portfolio management with AI-driven rebalancing, published daily NAV, and authorized participant creation/redemption" },
+      { icon: "🌐", title: "Listed on NYSE / NASDAQ", desc: "Our ETFs tradeable by any brokerage — Schwab, Fidelity, Robinhood, E*Trade — reaching millions of investors" },
+      { icon: "💎", title: "Revenue Model: AUM Fees", desc: "0.35-0.75% expense ratio on assets under management — the same model as Vanguard, BlackRock, and ARK Invest" },
+      { icon: "🚀", title: "Series A / B Fundraise", desc: "Institutional capital raise to scale AUM, expand fund lineup, and build out the AI research team" },
     ]},
   ];
   const advantages = [
-    { icon: "🧠", title: "AI That Actually Helps", desc: "Not just portfolio generation — real-time insights, personalized learning paths, and predictive analytics powered by advanced AI." },
-    { icon: "🎓", title: "Best-in-Class Education", desc: "Video lessons from experts, interactive simulations, certifications, and gamified learning that makes investing fun." },
-    { icon: "🌍", title: "Vibrant Community", desc: "User-generated content, portfolio cloning, mentorship programs, and competitions that drive engagement." },
-    { icon: "📡", title: "Data No One Else Has", desc: "Aggregated user behavior insights, crowd-sourced performance data, and sentiment analysis from our community." },
+    { icon: "🧠", title: "AI-First Architecture", desc: "Every portfolio is constructed by institutional-grade AI, not human guesswork. Our models analyze macro trends, earnings, sentiment, and cultural signals in real-time." },
+    { icon: "💹", title: "Real Brokerage Math", desc: "Not a toy. Entry prices, share counts, cost basis, P&L — our simulation engine matches the exact accounting logic used by Goldman Sachs and Morgan Stanley." },
+    { icon: "🎯", title: "Thesis-Driven Investing", desc: "Every holding has a reason. Our AI provides investment rationale, thesis connections, conviction levels, and exit triggers — like a real investment committee." },
+    { icon: "🌍", title: "Community Intelligence", desc: "Aggregated portfolio data from thousands of users creates a unique dataset of crowd-sourced investment strategies that no competitor can replicate." },
   ];
   const goals = [
-    { icon: "👥", value: "100K+", label: "Active Users" },
-    { icon: "🎯", value: "1M+", label: "Portfolios Created" },
-    { icon: "📖", value: "500K+", label: "Lessons Completed" },
-    { icon: "💬", value: "50K+", label: "Community Members" },
+    { icon: "👥", value: "100K", label: "Active Users", sub: "by end of 2026" },
+    { icon: "💰", value: "$10M", label: "Simulated AUM", sub: "tracked on platform" },
+    { icon: "🏦", value: "Q4 '26", label: "Real Money Launch", sub: "first live trades" },
+    { icon: "📜", value: "2027", label: "First ETF Filed", sub: "SEC Form N-1A" },
   ];
   return (
     <div className="page-container" style={{ maxWidth: 880, margin: "0 auto", padding: "36px 20px" }}>
       {/* Hero */}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <span style={{ ...badge(C.accent), fontSize: 10.5, marginBottom: 10, display: "inline-block" }}>🚀 Our Vision</span>
-        <h1 className="hero-title" style={{ color: C.text, fontSize: 38, margin: "0 0 4px", fontWeight: 800 }}>Disrupting the</h1>
-        <h1 className="hero-title" style={{ color: C.accent, fontSize: 38, margin: "0 0 14px", fontWeight: 800 }}>ETF Investment Space</h1>
-        <p style={{ color: C.sub, fontSize: 15, maxWidth: 600, margin: "0 auto", lineHeight: 1.6 }}>We're building the world's most advanced AI-powered investment education platform. Here's our roadmap to revolutionize how people learn, simulate, and invest in ETFs.</p>
+        <span style={{ ...badge(C.accent), fontSize: 10.5, marginBottom: 10, display: "inline-block" }}>🚀 From Simulation to Real Money</span>
+        <h1 className="hero-title" style={{ color: C.text, fontSize: 38, margin: "0 0 4px", fontWeight: 800 }}>Building the Future of</h1>
+        <h1 className="hero-title" style={{ color: C.accent, fontSize: 38, margin: "0 0 14px", fontWeight: 800 }}>AI-Powered Investing</h1>
+        <p style={{ color: C.sub, fontSize: 15, maxWidth: 640, margin: "0 auto", lineHeight: 1.6 }}>We started as a simulation platform. We're building toward real money, real ETFs, and real returns. Our roadmap takes us from AI-powered paper trading to SEC-registered funds listed on major exchanges.</p>
       </div>
 
       {/* Where We Are Today */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
-        <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>Where We Are Today</h2>
-        <p style={{ color: C.sub, fontSize: 13.5 }}>We've built a solid foundation with core features that work. Now we're ready to scale.</p>
+        <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>What's Live Today</h2>
+        <p style={{ color: C.sub, fontSize: 13.5 }}>A fully operational investment simulation platform with institutional-grade features</p>
       </div>
-      <div className="grid4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 40 }}>
+      <div className="grid4" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 40 }}>
         {liveFeatures.map((f, i) => (
-          <div key={i} style={{ ...cardS(), display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div><span style={{ fontSize: 20, marginRight: 8 }}>{f.icon}</span><span style={{ color: C.text, fontSize: 13, fontWeight: 600 }}>{f.title}</span></div>
-            <span style={{ ...badge(C.green), fontSize: 9 }}>✓ Live</span>
+          <div key={i} style={{ ...cardS(), display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 18 }}>{f.icon}</span>
+                <span style={{ color: C.text, fontSize: 13, fontWeight: 600 }}>{f.title}</span>
+              </div>
+              <p style={{ color: C.dim, fontSize: 11, margin: 0, lineHeight: 1.4, paddingLeft: 26 }}>{f.desc}</p>
+            </div>
+            <span style={{ ...badge(C.green), fontSize: 8, flexShrink: 0, marginTop: 2 }}>✓ LIVE</span>
           </div>
         ))}
       </div>
@@ -3519,14 +3538,15 @@ function Roadmap({ go }) {
       {/* The Roadmap */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
         <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>The Roadmap</h2>
-        <p style={{ color: C.sub, fontSize: 13.5 }}>Our three-phase plan to become the #1 investment education platform</p>
+        <p style={{ color: C.sub, fontSize: 13.5 }}>Four phases from simulation → paper trading → real money → real ETFs</p>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
         {phases.map((phase) => (
           <div key={phase.num} style={{ ...cardS(), borderColor: phase.color + "33" }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ ...badge(phase.color), fontSize: 10 }}>{phase.label}</span>
               <span style={{ color: phase.color, fontSize: 12, fontWeight: 600 }}>{phase.timing}</span>
+              <span style={{ ...badge(phase.status === "IN PROGRESS" ? C.green : phase.status === "PLANNED" ? C.gold : C.accent), fontSize: 8 }}>{phase.status}</span>
             </div>
             <h3 style={{ color: C.text, fontSize: 20, margin: "0 0 4px", fontWeight: 700 }}>{phase.title}</h3>
             <p style={{ color: C.sub, fontSize: 13, marginBottom: 14 }}>{phase.desc}</p>
@@ -3546,7 +3566,7 @@ function Roadmap({ go }) {
       {/* Our Unfair Advantage */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
         <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>Our Unfair Advantage</h2>
-        <p style={{ color: C.sub, fontSize: 13.5 }}>What makes us different from every other investment platform</p>
+        <p style={{ color: C.sub, fontSize: 13.5 }}>Why we win in a crowded market</p>
       </div>
       <div className="grid4" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, marginBottom: 40 }}>
         {advantages.map((a, i) => (
@@ -3558,19 +3578,27 @@ function Roadmap({ go }) {
         ))}
       </div>
 
-      {/* Our Goals */}
+      {/* Milestones */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
-        <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>Our Goals</h2>
-        <p style={{ color: C.sub, fontSize: 13.5 }}>Ambitious targets for the next 12 months</p>
+        <h2 style={{ color: C.text, fontSize: 24, margin: "0 0 6px", fontWeight: 700 }}>Key Milestones</h2>
+        <p style={{ color: C.sub, fontSize: 13.5 }}>The targets that define our trajectory</p>
       </div>
       <div className="grid4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 20 }}>
         {goals.map((g, i) => (
           <div key={i} style={{ ...cardS(), textAlign: "center", padding: "24px 16px" }}>
             <div style={{ fontSize: 24, marginBottom: 6 }}>{g.icon}</div>
-            <div style={{ color: C.accent, fontSize: 30, fontWeight: 800, lineHeight: 1.2 }}>{g.value}</div>
-            <div style={{ color: C.dim, fontSize: 12, marginTop: 4 }}>{g.label}</div>
+            <div style={{ color: C.accent, fontSize: 28, fontWeight: 800, lineHeight: 1.2 }}>{g.value}</div>
+            <div style={{ color: C.text, fontSize: 12.5, marginTop: 4, fontWeight: 600 }}>{g.label}</div>
+            <div style={{ color: C.dim, fontSize: 10, marginTop: 2 }}>{g.sub}</div>
           </div>
         ))}
+      </div>
+
+      {/* Investor CTA */}
+      <div style={{ ...cardS(), textAlign: "center", padding: "32px 24px", marginTop: 20, borderColor: C.accent + "33", background: C.accentBg }}>
+        <h3 style={{ color: C.text, fontSize: 20, margin: "0 0 8px", fontWeight: 700 }}>Interested in Our Vision?</h3>
+        <p style={{ color: C.sub, fontSize: 14, maxWidth: 500, margin: "0 auto 16px", lineHeight: 1.6 }}>We're building the next generation of investment infrastructure. If you're an investor, partner, or institution interested in the future of AI-powered finance, we'd love to connect.</p>
+        <a href="mailto:invest@etfsimulator.com" style={{ ...btnP(), textDecoration: "none", display: "inline-block", fontSize: 13 }}>invest@etfsimulator.com →</a>
       </div>
     </div>
   );
@@ -3858,7 +3886,7 @@ export default function App() {
                   transactions: Array.isArray(pd.transactions) ? pd.transactions : [],
                   navHistory: Array.isArray(pd.navHistory) ? pd.navHistory : [],
                   trackingData: Array.isArray(pd.trackingData) ? pd.trackingData : [],
-                  cashBalance: pd.cashBalance || 0,
+                  cashBalance: pd.cashBalance || pd.cashPosition?.amount || 0,
                   createdAt: pd.createdAt || row.created_at || new Date().toISOString(),
                 };
               }).filter(p => p.holdings.length > 0); // Only show portfolios that have holdings
@@ -3905,8 +3933,8 @@ export default function App() {
                       weight: h.weight, assetType: h.type,
                       reason: `Initial portfolio construction — ${h.weight}% allocation ($${h.allocation.toLocaleString()}) at ${fmtPrice(h.entryPrice)}/share`,
                     }));
-                    // Reset portfolio value to actual sum of holdings + cash (removes old random drift value)
-                    const migratedValue = migratedHoldings.reduce((s, h) => s + (h.liveValue || h.allocation), 0) + (p.cashBalance || 0);
+                    const migratedCash = p.cashBalance || p.cashPosition?.amount || 0;
+                    const migratedValue = migratedHoldings.reduce((s, h) => s + (h.liveValue || h.allocation), 0) + migratedCash;
                     return { ...p, holdings: migratedHoldings, transactions: migratedTx, value: Math.round(migratedValue) };
                   });
                   setPortfolios(migrated);
