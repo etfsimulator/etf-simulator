@@ -2994,8 +2994,13 @@ const fetchRealQuotes = async (holdings) => {
   // ── BINANCE REST PRIMARY — fetch meme/micro-cap cryptos directly from Binance public API ──
   // Finnhub returns stale ATH prices for these tokens. Binance REST is free, no-auth, CORS-friendly.
   const BINANCE_PRIMARY_SYMBOLS = new Set([
+    // Memecoins — Finnhub returns stale ATH prices for these
     "WIF","BONK","PEPE","FLOKI","SHIB","BOME","PONKE","BRETT","POPCAT","MEW","MOG","DOGE",
     "MEME","TURBO","NEIRO","GIGA","SPX","SLERF","RATS","ORDI","SATS","BABYDOGE",
+    // AI & mid-cap tokens — Finnhub free tier returns stale/ghost prices
+    "FET","AGIX","OCEAN","TAO","RENDER","INJ","SEI","TIA","SUI","APT","NEAR",
+    "ARB","OP","STX","HBAR","ICP","ALGO","XLM","VET","THETA","GRT","LDO",
+    "AAVE","MKR","CRV","SNX","COMP","UNI","LINK","MATIC","FIL","ATOM","DOT",
   ]);
   const binancePrimaryNeeded = needFetch.filter(sym => BINANCE_PRIMARY_SYMBOLS.has(sym) && !quotes[sym]);
   if (binancePrimaryNeeded.length > 0) {
