@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ETF Simulator - AI-Powered Investment Simulation for Educational Purposes. Build, test, and learn with custom ETF portfolios using real market data in a risk-free environment.">
+    <title>ETF Simulator - AI-Powered Investment Education Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <h1 class="logo">ETF Simulator</h1>
+                <div class="mode-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch" aria-label="Toggle dark mode">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search assets or strategies..." aria-label="Search assets or strategies">
+                <button aria-label="Search"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="ticker" id="ticker" aria-live="polite">
+                <!-- Dynamic ticker content populated via JS -->
+            </div>
+            <p class="tagline">Educational Simulator • Not Financial Advice</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h2>ETF Simulator</h2>
+                <h3>AI-Powered Investment Simulation for Educational Purposes</h3>
+                <p>Build, test, and learn with custom ETF portfolios. Educational platform with real market data.</p>
+                <button class="cta" onclick="scrollToSection('how-it-works')">Start Your Journey</button>
+            </div>
+        </section>
+
+        <section class="market-data" id="market-data">
+            <div class="container">
+                <h4>Live Market Data</h4>
+                <p>Real-time prices updated every 30 seconds</p>
+                <div class="market-grid" id="market-grid">
+                    <!-- Dynamic market cards populated via JS (from ticker data) -->
+                </div>
+            </div>
+        </section>
+
+        <section class="core-features">
+            <div class="container">
+                <h2>AI-Powered Investment Simulation</h2>
+                <p>Build, test, and learn with custom ETF portfolios. Educational platform with real market data.</p>
+                <div class="feature-tags">
+                    <span>Risk-Free Learning</span>
+                    <span>Real Market Data</span>
+                    <span>AI-Powered</span>
+                    <span>Portfolio Generation</span>
+                    <span>Real-Time Market Pricing</span>
+                    <span>Analytics</span>
+                    <span>Performance Metrics</span>
+                    <span>Educational</span>
+                    <span>Risk-Free Platform</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="education-platform">
+            <div class="container">
+                <h2>Investment Education Platform</h2>
+                <p>Learn portfolio management through hands-on simulation with institutional-grade tools</p>
+                <div class="platform-grid">
+                    <div class="platform-card">
+                        <i class="fas fa-brain"></i>
+                        <h3>AI Portfolio Builder</h3>
+                        <p>Advanced algorithms analyze market data to create optimized portfolios</p>
+                    </div>
+                    <div class="platform-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Live Market Data</h3>
+                        <p>Real-time pricing and historical performance tracking</p>
+                    </div>
+                    <div class="platform-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Risk-Free Learning</h3>
+                        <p>Practice investment strategies without financial risk</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works" id="how-it-works">
+            <div class="container">
+                <h2>How It Works</h2>
+                <p>Three steps to start your investment education journey</p>
+                <div class="steps-grid">
+                    <div class="step">
+                        <span class="step-number">01</span>
+                        <h3>Define Strategy</h3>
+                        <p>Describe your investment thesis or select from pre-built strategies</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">02</span>
+                        <h3>AI Generation</h3>
+                        <p>Our AI analyzes market data and builds a custom portfolio</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">03</span>
+                        <h3>Track Performance</h3>
+                        <p>Monitor real-time performance with institutional analytics</p>
+                    </div>
+                </div>
+                <!-- Portfolio Generation Form (interactivity for simulation) -->
+                <form id="portfolio-form" class="simulation-form">
+                    <label for="strategy">Define Your Strategy:</label>
+                    <input type="text" id="strategy" placeholder="e.g., Growth-focused tech portfolio" required aria-label="Investment strategy">
+                    <button type="submit" class="cta">Generate Portfolio</button>
+                </form>
+                <div id="portfolio-result" aria-live="polite">
+                    <!-- Dynamic result displayed here via JS -->
+                </div>
+            </div>
+        </section>
+
+        <section class="platform-features">
+            <div class="container">
+                <h2>Platform Features</h2>
+                <p>Professional-grade tools for investment education</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>AI Portfolio Construction</h3>
+                        <p>Machine learning algorithms optimize asset allocation based on your investment objectives.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-sync"></i>
+                        <h3>Real-Time Pricing</h3>
+                        <p>Live market data integration with 30-second refresh intervals.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Performance Analytics</h3>
+                        <p>Sharpe ratio, volatility, drawdown, and comprehensive risk metrics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-balance-scale"></i>
+                        <h3>Asset Allocation</h3>
+                        <p>Diversified portfolios across equities, bonds, commodities, and alternatives.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-history"></i>
+                        <h3>Backtesting Engine</h3>
+                        <p>Test strategies against historical data to understand performance patterns.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Instant Execution</h3>
+                        <p>Create and modify portfolios in seconds with our streamlined interface.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="disclaimer">
+            <div class="container">
+                <h3>Important Disclaimer</h3>
+                <p>This is an educational tool only. It is not financial advice. All simulations are hypothetical. Past performance is not indicative of future results. Investing involves risk, including the possible loss of principal. Consult with qualified financial professionals before making any investment decisions.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <h4>ETF Simulator</h4>
+            <p>An educational platform for learning investment strategies through AI-powered portfolio simulation. Build, test, and understand market dynamics in a risk-free environment.</p>
+            <nav>
+                <ul>
+                    <li><a href="#">Product</a></li>
+                    <li><a href="#">Company</a></li>
+                    <li><a href="#">Legal</a></li>
+                </ul>
+            </nav>
+            <div class="legal-disclaimer">
+                <h5>Educational Simulator Disclaimer</h5>
+                <p><strong>NOT FINANCIAL ADVICE:</strong> This platform provides educational simulations only. No professional financial advice is given.</p>
+                <p><strong>NO INVESTMENT RECOMMENDATIONS:</strong> We do not endorse any securities or strategies.</p>
+                <p><strong>RISK DISCLOSURE:</strong> Investing and cryptocurrencies involve substantial risk. Data may have limitations in accuracy.</p>
+                <p><strong>NO WARRANTIES:</strong> Provided "as is" with no guarantees.</p>
+                <p><strong>REGULATORY NOTICE:</strong> Not a registered advisor or broker; no real trading occurs.</p>
+            </div>
+            <p>© 2026 ETF Simulator. Educational purposes only.</p>
+        </div>
+    </footer>
+</body>
+</html>
