@@ -4263,7 +4263,7 @@ function Leaderboard({ publicPortfolios, user, lbLoading, lbLastUpdate }) {
                 <span style={{ color: C.sub, fontFamily: mono, fontSize: 12 }}>{p.fee}%</span>
                 <span style={{ color: C.dim, fontSize: 10 }}>{isOpen ? "▾" : "▸"}</span>
               </div>
-              {isOpen && i < 10 && (
+              {isOpen && (
                 <div style={{ borderTop: `1px solid ${C.border}`, background: C.surface }}>
                   {/* Tab Bar */}
                   <div className="tab-bar" style={{ display: "flex", gap: 6, padding: "10px 18px", borderBottom: `1px solid ${C.border}`, flexWrap: "wrap" }}>
